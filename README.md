@@ -2,6 +2,8 @@
 
 This repository contains the completed frontend and backend implementation for the VectorShift technical assessment. The project features an interactive, node-based pipeline editor built with React on the frontend and a FastAPI backend for pipeline parsing and analysis.
 
+**Try it out [live here](https://ai-workflow-pipeline-builder.netlify.app/)!**
+
 ## Features Implemented
 
 ### 1. Node Abstraction (`frontend/src/nodes/BaseNode.jsx`)

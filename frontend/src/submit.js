@@ -19,7 +19,7 @@ export const SubmitButton = () => {
     setModalData(null);
 
     try {
-      const response = await fetch("https://ai-workflow-pipeline-builder.onrender.com/", {
+      const response = await fetch("https://ai-workflow-pipeline-builder.onrender.com/pipelines/parse", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

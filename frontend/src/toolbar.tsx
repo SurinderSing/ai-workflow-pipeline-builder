@@ -1,8 +1,7 @@
-// toolbar.js
-
+import React from "react";
 import { DraggableNode } from "./draggableNode";
 
-export const PipelineToolbar = () => {
+export const PipelineToolbar = (): JSX.Element => {
   return (
     <div className="pipeline-toolbar">
       <span className="pipeline-toolbar-title">Nodes</span>

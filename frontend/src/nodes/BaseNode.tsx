@@ -1,4 +1,19 @@
+import React, { ReactNode } from "react";
 import { Handle, Position } from "reactflow";
+
+export interface NodeHandle {
+  name: string;
+}
+
+export interface BaseNodeProps {
+  id: string;
+  title: string;
+  inputs?: NodeHandle[];
+  outputs?: NodeHandle[];
+  children?: ReactNode;
+  icon?: string;
+  headerClass?: string;
+}
 
 const BaseNode = ({
   id,
@@ -8,7 +23,7 @@ const BaseNode = ({
   children,
   icon,
   headerClass,
-}) => {
+}: BaseNodeProps): JSX.Element => {
   const inputCount = inputs.length;
   const outputCount = outputs.length;
 

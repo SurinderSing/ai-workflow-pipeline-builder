@@ -1,19 +1,26 @@
-// inputNode.js
-
-import { useState } from "react";
+import React, { useState, ChangeEvent } from "react";
+import { NodeProps } from "reactflow";
 import BaseNode from "./BaseNode";
 
-export const InputNode = ({ id, data }) => {
-  const [currName, setCurrName] = useState(
+export interface InputNodeData extends Record<string, unknown> {
+  inputName?: string;
+  inputType?: string;
+}
+
+export const InputNode = ({
+  id,
+  data,
+}: NodeProps<InputNodeData>): JSX.Element => {
+  const [currName, setCurrName] = useState<string>(
     data?.inputName || id.replace("customInput-", "input_"),
   );
-  const [inputType, setInputType] = useState(data?.inputType || "Text");
+  const [inputType, setInputType] = useState<string>(data?.inputType || "Text");
 
-  const handleNameChange = (e) => {
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>): void => {
     setCurrName(e.target.value);
   };
 
-  const handleTypeChange = (e) => {
+  const handleTypeChange = (e: ChangeEvent<HTMLSelectElement>): void => {
     setInputType(e.target.value);
   };
 

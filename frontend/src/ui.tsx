@@ -1,6 +1,14 @@
-import { useState, useRef, useCallback } from "react";
-import ReactFlow, { Controls, Background, MiniMap } from "reactflow";
-import { useStore } from "./store";
+import React, { useState, useRef, useCallback, DragEvent } from "react";
+import ReactFlow, {
+  Controls,
+  Background,
+  MiniMap,
+  ReactFlowInstance,
+  Node,
+  NodeTypes,
+  ConnectionLineType,
+} from "reactflow";
+import { useStore, StoreState } from "./store";
 import { shallow } from "zustand/shallow";
 import { InputNode } from "./nodes/inputNode";
 import { LLMNode } from "./nodes/llmNode";
@@ -16,7 +24,7 @@ import "reactflow/dist/style.css";
 
 const gridSize = 20;
 const proOptions = { hideAttribution: true };
-const nodeTypes = {
+const nodeTypes: NodeTypes = {
   customInput: InputNode,
   llm: LLMNode,
   customOutput: OutputNode,
@@ -28,7 +36,7 @@ const nodeTypes = {
   display: DisplayNode,
 };
 
-const selector = (state) => ({
+const selector = (state: StoreState) => ({
   nodes: state.nodes,
   edges: state.edges,
   getNodeID: state.getNodeID,
@@ -38,9 +46,11 @@ const selector = (state) => ({
   onConnect: state.onConnect,
 });
 
-export const PipelineUI = () => {
-  const reactFlowWrapper = useRef(null);
-  const [reactFlowInstance, setReactFlowInstance] = useState(null);
+export const PipelineUI = (): JSX.Element => {
+  const reactFlowWrapper = useRef<HTMLDivElement>(null);
+  const [reactFlowInstance, setReactFlowInstance] =
+    useState<ReactFlowInstance | null>(null);
+
   const {
     nodes,
     edges,
@@ -51,20 +61,30 @@ export const PipelineUI = () => {
     onConnect,
   } = useStore(selector, shallow);
 
-  const getInitNodeData = (nodeID, type) => {
-    const nodeData = { id: nodeID, nodeType: `${type}` };
-    return nodeData;
+  const getInitNodeData = (
+    nodeID: string,
+    type: string,
+  ): Record<string, unknown> => {
+    return { id: nodeID, nodeType: type };
   };
 
   const onDrop = useCallback(
-    (event) => {
+    (event: DragEvent<HTMLDivElement>): void => {
       event.preventDefault();
 
+      if (!reactFlowWrapper.current || !reactFlowInstance) return;
+
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-      if (event?.dataTransfer?.getData("application/reactflow")) {
-        const appData = JSON.parse(
-          event.dataTransfer.getData("application/reactflow"),
-        );
+      const appDataStr = event.dataTransfer.getData("application/reactflow");
+
+      if (appDataStr) {
+        let appData;
+        try {
+          appData = JSON.parse(appDataStr);
+        } catch {
+          return;
+        }
+
         const type = appData?.nodeType;
 
         if (typeof type === "undefined" || !type) {
@@ -77,7 +97,7 @@ export const PipelineUI = () => {
         });
 
         const nodeID = getNodeID(type);
-        const newNode = {
+        const newNode: Node = {
           id: nodeID,
           type,
           position,
@@ -90,7 +110,7 @@ export const PipelineUI = () => {
     [reactFlowInstance, getNodeID, addNode],
   );
 
-  const onDragOver = useCallback((event) => {
+  const onDragOver = useCallback((event: DragEvent<HTMLDivElement>): void => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
   }, []);
@@ -109,7 +129,7 @@ export const PipelineUI = () => {
         nodeTypes={nodeTypes}
         proOptions={proOptions}
         snapGrid={[gridSize, gridSize]}
-        connectionLineType="smoothstep"
+        connectionLineType={ConnectionLineType.SmoothStep}
       >
         <Background color="#cbd5e1" gap={gridSize} />
         <Controls />

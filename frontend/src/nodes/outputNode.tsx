@@ -1,19 +1,28 @@
-// outputNode.js
-
-import { useState } from "react";
+import React, { useState, ChangeEvent } from "react";
+import { NodeProps } from "reactflow";
 import BaseNode from "./BaseNode";
 
-export const OutputNode = ({ id, data }) => {
-  const [currName, setCurrName] = useState(
+export interface OutputNodeData extends Record<string, unknown> {
+  outputName?: string;
+  outputType?: string;
+}
+
+export const OutputNode = ({
+  id,
+  data,
+}: NodeProps<OutputNodeData>): JSX.Element => {
+  const [currName, setCurrName] = useState<string>(
     data?.outputName || id.replace("customOutput-", "output_"),
   );
-  const [outputType, setOutputType] = useState(data?.outputType || "Text");
+  const [outputType, setOutputType] = useState<string>(
+    data?.outputType || "Text",
+  );
 
-  const handleNameChange = (e) => {
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>): void => {
     setCurrName(e.target.value);
   };
 
-  const handleTypeChange = (e) => {
+  const handleTypeChange = (e: ChangeEvent<HTMLSelectElement>): void => {
     setOutputType(e.target.value);
   };
 

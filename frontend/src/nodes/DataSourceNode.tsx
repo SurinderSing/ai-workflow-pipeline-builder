@@ -1,14 +1,22 @@
-// DataSourceNode.jsx
-
-import { useState } from "react";
+import React, { useState, ChangeEvent } from "react";
+import { NodeProps } from "reactflow";
 import BaseNode from "./BaseNode";
 
-const SOURCE_OPTIONS = ["Database", "API", "File", "Cache"];
+const SOURCE_OPTIONS: string[] = ["Database", "API", "File", "Cache"];
 
-export const DataSourceNode = ({ id, data }) => {
-  const [sourceType, setSourceType] = useState(data?.sourceType || "Database");
+export interface DataSourceNodeData extends Record<string, unknown> {
+  sourceType?: string;
+}
 
-  const handleTypeChange = (e) => {
+export const DataSourceNode = ({
+  id,
+  data,
+}: NodeProps<DataSourceNodeData>): JSX.Element => {
+  const [sourceType, setSourceType] = useState<string>(
+    data?.sourceType || "Database",
+  );
+
+  const handleTypeChange = (e: ChangeEvent<HTMLSelectElement>): void => {
     setSourceType(e.target.value);
   };
 

@@ -1,25 +1,31 @@
-// textNode.js
-
-import { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, ChangeEvent } from "react";
+import { NodeProps } from "reactflow";
 import BaseNode from "./BaseNode";
 
 const MIN_WIDTH = 200;
 const MAX_WIDTH = 600;
 
-const extractVariables = (text) => {
-  const variables = new Set();
+const extractVariables = (text: string): string[] => {
+  const variables = new Set<string>();
   const regex = /\{\{\s*([A-Za-z_$][A-Za-z0-9_$]*)\s*\}\}/g;
-  let match;
+  let match: RegExpExecArray | null;
   while ((match = regex.exec(text)) !== null) {
     variables.add(match[1]);
   }
   return Array.from(variables).sort();
 };
 
-export const TextNode = ({ id, data }) => {
-  const [currText, setCurrText] = useState(data?.text || "{{input}}");
-  const [nodeWidth, setNodeWidth] = useState(MIN_WIDTH);
-  const textareaRef = useRef(null);
+export interface TextNodeData extends Record<string, unknown> {
+  text?: string;
+}
+
+export const TextNode = ({
+  id,
+  data,
+}: NodeProps<TextNodeData>): JSX.Element => {
+  const [currText, setCurrText] = useState<string>(data?.text || "{{input}}");
+  const [nodeWidth, setNodeWidth] = useState<number>(MIN_WIDTH);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const variables = extractVariables(currText);
 
@@ -27,27 +33,30 @@ export const TextNode = ({ id, data }) => {
     name: `var_${varName}`,
   }));
 
-  const handleTextChange = useCallback((e) => {
-    const newText = e.target.value;
-    setCurrText(newText);
+  const handleTextChange = useCallback(
+    (e: ChangeEvent<HTMLTextAreaElement>): void => {
+      const newText = e.target.value;
+      setCurrText(newText);
 
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = "auto";
-      textarea.style.height = `${textarea.scrollHeight}px`;
+      const textarea = textareaRef.current;
+      if (textarea) {
+        textarea.style.height = "auto";
+        textarea.style.height = `${textarea.scrollHeight}px`;
 
-      const lines = newText.split("\n");
-      const longestLine = lines.reduce(
-        (max, line) => Math.max(max, line.length),
-        0,
-      );
-      const estimatedWidth = Math.min(
-        MAX_WIDTH,
-        Math.max(MIN_WIDTH, longestLine * 8 + 40),
-      );
-      setNodeWidth(estimatedWidth);
-    }
-  }, []);
+        const lines = newText.split("\n");
+        const longestLine = lines.reduce(
+          (max, line) => Math.max(max, line.length),
+          0,
+        );
+        const estimatedWidth = Math.min(
+          MAX_WIDTH,
+          Math.max(MIN_WIDTH, longestLine * 8 + 40),
+        );
+        setNodeWidth(estimatedWidth);
+      }
+    },
+    [],
+  );
 
   return (
     <div style={{ minWidth: `${nodeWidth}px`, maxWidth: `${MAX_WIDTH}px` }}>

@@ -1,8 +1,8 @@
-// DisplayNode.jsx
-
+import React from "react";
+import { NodeProps } from "reactflow";
 import BaseNode from "./BaseNode";
 
-export const DisplayNode = ({ id }) => {
+export const DisplayNode = ({ id }: NodeProps): JSX.Element => {
   return (
     <BaseNode
       id={id}

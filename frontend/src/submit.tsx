@@ -1,31 +1,52 @@
-// submit.js
-
-import { useState } from "react";
-import { useStore } from "./store";
+import React, { useState } from "react";
+import { useStore, StoreState } from "./store";
 import { shallow } from "zustand/shallow";
 
-const selector = (state) => ({
+const selector = (state: StoreState) => ({
   nodes: state.nodes,
   edges: state.edges,
 });
 
-export const SubmitButton = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [modalData, setModalData] = useState(null);
+interface BaseModalData {
+  type: "success" | "error";
+}
+
+interface SuccessModalData extends BaseModalData {
+  type: "success";
+  data: {
+    num_nodes: number;
+    num_edges: number;
+    is_dag: boolean;
+  };
+}
+
+interface ErrorModalData extends BaseModalData {
+  type: "error";
+  message: string;
+}
+
+type ModalData = SuccessModalData | ErrorModalData | null;
+
+export const SubmitButton = (): JSX.Element => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [modalData, setModalData] = useState<ModalData>(null);
   const { nodes, edges } = useStore(selector, shallow);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     setIsLoading(true);
     setModalData(null);
 
     try {
-      const response = await fetch("https://ai-workflow-pipeline-builder.onrender.com/pipelines/parse", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "https://ai-workflow-pipeline-builder.onrender.com/pipelines/parse",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ nodes, edges }),
         },
-        body: JSON.stringify({ nodes, edges }),
-      });
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -40,8 +61,10 @@ export const SubmitButton = () => {
       }
 
       setModalData({ type: "success", data: result });
-    } catch (error) {
-      setModalData({ type: "error", message: error.message });
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "An unknown error occurred";
+      setModalData({ type: "error", message });
     } finally {
       setIsLoading(false);
     }

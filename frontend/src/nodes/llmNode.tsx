@@ -1,8 +1,8 @@
-// llmNode.js
-
+import React from "react";
+import { NodeProps } from "reactflow";
 import BaseNode from "./BaseNode";
 
-export const LLMNode = ({ id }) => {
+export const LLMNode = ({ id }: NodeProps): JSX.Element => {
   return (
     <BaseNode
       id={id}

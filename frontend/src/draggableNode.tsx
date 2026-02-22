@@ -1,9 +1,20 @@
-// draggableNode.js
+import React, { DragEvent } from "react";
 
-export const DraggableNode = ({ type, label }) => {
-  const onDragStart = (event, nodeType) => {
+interface DraggableNodeProps {
+  type: string;
+  label: string;
+}
+
+export const DraggableNode = ({
+  type,
+  label,
+}: DraggableNodeProps): JSX.Element => {
+  const onDragStart = (
+    event: DragEvent<HTMLDivElement>,
+    nodeType: string,
+  ): void => {
     const appData = { nodeType };
-    event.target.style.cursor = "grabbing";
+    event.currentTarget.style.cursor = "grabbing";
     event.dataTransfer.setData(
       "application/reactflow",
       JSON.stringify(appData),
@@ -16,7 +27,7 @@ export const DraggableNode = ({ type, label }) => {
       className="draggable-node"
       onDragStart={(event) => onDragStart(event, type)}
       onDragEnd={(event) => {
-        event.target.style.cursor = "grab";
+        event.currentTarget.style.cursor = "grab";
       }}
       draggable
     >

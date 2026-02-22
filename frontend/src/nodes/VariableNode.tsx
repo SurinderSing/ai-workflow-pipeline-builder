@@ -1,12 +1,18 @@
-// VariableNode.jsx
-
-import { useState } from "react";
+import React, { useState, ChangeEvent } from "react";
+import { NodeProps } from "reactflow";
 import BaseNode from "./BaseNode";
 
-export const VariableNode = ({ id, data }) => {
-  const [value, setValue] = useState(data?.value || "");
+export interface VariableNodeData extends Record<string, unknown> {
+  value?: string;
+}
 
-  const handleValueChange = (e) => {
+export const VariableNode = ({
+  id,
+  data,
+}: NodeProps<VariableNodeData>): JSX.Element => {
+  const [value, setValue] = useState<string>(data?.value || "");
+
+  const handleValueChange = (e: ChangeEvent<HTMLInputElement>): void => {
     setValue(e.target.value);
   };
 

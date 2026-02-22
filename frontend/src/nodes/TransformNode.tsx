@@ -1,9 +1,8 @@
-// TransformNode.jsx
-
-import { useState } from "react";
+import React, { useState, ChangeEvent } from "react";
+import { NodeProps } from "reactflow";
 import BaseNode from "./BaseNode";
 
-const TRANSFORM_OPTIONS = [
+const TRANSFORM_OPTIONS: string[] = [
   "Uppercase",
   "Lowercase",
   "Trim",
@@ -11,12 +10,19 @@ const TRANSFORM_OPTIONS = [
   "JSON Parse",
 ];
 
-export const TransformNode = ({ id, data }) => {
-  const [transformType, setTransformType] = useState(
+export interface TransformNodeData extends Record<string, unknown> {
+  transformType?: string;
+}
+
+export const TransformNode = ({
+  id,
+  data,
+}: NodeProps<TransformNodeData>): JSX.Element => {
+  const [transformType, setTransformType] = useState<string>(
     data?.transformType || "Uppercase",
   );
 
-  const handleTypeChange = (e) => {
+  const handleTypeChange = (e: ChangeEvent<HTMLSelectElement>): void => {
     setTransformType(e.target.value);
   };
 
